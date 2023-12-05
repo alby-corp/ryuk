@@ -1,15 +1,17 @@
 ﻿@using Ryuk.Extensions
 @using Ryuk.Components.Pages.MySpace.Actions
+@using System.Globalization
 
 @if (Issues is null || _items is null)
 {
-        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
     </MudStack>
     return;
 }
 
-<MudDataGrid @ref="grid" T="RefinementModel" Items="@_items" Dense="true">
+<MudDataGrid @ref="grid" T="RefinementModel" Items="@_items" Dense="true"
+    EditMode="DataGridEditMode.Form" EditTrigger="DataGridEditTrigger.Manual" ReadOnly="@false" CommittedItemChanges="CommittedItemChanges">
     <Columns>
 
         <TemplateColumn Title="Type" SortBy="model => model.Type">
@@ -34,13 +36,28 @@
             </CellTemplate>
         </TemplateColumn>
 
-        <PropertyColumn Title="Summary" Property="model => model.Summary"/>
+        <TemplateColumn Title="Summary" SortBy="model => model.Summary">
+            <CellTemplate>
+                @context.Item.Summary
+            </CellTemplate>
+            </TemplateColumn>
+        
+        <PropertyColumn Title="Original Estimate" Property="model => model.OriginalEstimate" SortBy="model => model.OriginalEstimateInSeconds" Required>
+            <EditTemplate>
+                <MudTextField Label="Original Estimate"
+                              @bind-Value="@context.Item.OriginalEstimate" Variant="Variant.Text"
+                              Required RequiredError="Provide a Original Estimate"/>
+            </EditTemplate>
+        </PropertyColumn>
 
         <TemplateColumn Title="Actions" Sortable="false">
             <CellTemplate>
-                <CascadingValue Value="@Issues.GetByKey(context.Item.Key)">
-                    <ActionButtons/>
-                </CascadingValue>
+                <MudStack Row Justify="Justify.FlexStart" AlignItems="AlignItems.Start">
+                    <CascadingValue Value="@Issues.GetByKey(context.Item.Key)">
+                        <ActionButtons/>
+                    </CascadingValue>
+                    <MudButton Variant="Variant.Outlined" OnClick="@context.Actions.StartEditingItemAsync">Edit</MudButton>
+                </MudStack>
             </CellTemplate>
         </TemplateColumn>
     </Columns>

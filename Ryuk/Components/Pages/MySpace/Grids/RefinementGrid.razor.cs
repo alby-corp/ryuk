@@ -11,6 +11,8 @@ public partial class RefinementGrid
     FrozenSet<RefinementModel>? _items;
     [Parameter] public required FrozenSet<Issue>? Issues { get; set; }
 
+    protected override void OnInitialized() => jira = Provider.GetRequiredKeyedService<Jira>("Company1");
+
     protected override void OnParametersSet() =>
         _items = Issues?
             .Where(issue => issue.InStatus(Status.Backlog, Status.Refinement))
@@ -18,4 +20,15 @@ public partial class RefinementGrid
             .OrderByDescending(model => model.Status)
             .ThenBy(model => model.Key)
             .ToFrozenSet() ?? FrozenSet<RefinementModel>.Empty;
+    
+    async Task CommittedItemChanges(RefinementModel item)
+    {
+        // var issue = Issues.GetByKey(item.Key);
+
+        var errors = await jira.UpdateOriginalEstimateAsync(item.Key, item.OriginalEstimate).ToListAsync();
+        if (errors.Count != 0) await DialogService.ShowMessageBox("Error", string.Join("; ", errors));
+
+    }
+    
+    
 }
