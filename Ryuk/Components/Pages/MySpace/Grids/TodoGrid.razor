@@ -1,0 +1,71 @@
+﻿@using Ryuk.Extensions
+@using Ryuk.Components.Pages.MySpace.Actions
+@using System.Globalization
+
+@if (Issues is null || _items is null)
+{
+    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    </MudStack>
+    return;
+}
+
+<MudDataGrid @ref="grid" T="ToDoModel" Items="@_items" Dense="true">
+    <Columns>
+
+        <TemplateColumn Title="Type" SortBy="model => model.Type">
+            <CellTemplate>
+                <MudImage Src="@context.Item.TypeIconUrl"/>
+            </CellTemplate>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Status" SortBy="model => model.Status" IsEditable="false">
+            <CellTemplate>
+                <MudChip Variant="Variant.Outlined" Color="@context.Item.StatusColor">@context.Item.Status</MudChip>
+            </CellTemplate>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Key" SortBy="model => model.Key">
+            <CellTemplate>
+                <MudBreadcrumbs Items="@context.Item.Breadcrumbs">
+                    <ItemTemplate Context="item">
+                        <MudLink Href="@item.Href">@item.Text</MudLink>
+                    </ItemTemplate>
+                </MudBreadcrumbs>
+            </CellTemplate>
+        </TemplateColumn>
+
+        <PropertyColumn Title="Summary" Property="model => model.Summary" IsEditable="false"/>
+
+        <PropertyColumn Title="Start Date" Property="model => model.StartDate" Format="d" Culture="CultureInfo.CurrentCulture" SortBy="model => model.StartDate ?? DateTime.MinValue"/>
+
+        <PropertyColumn Title="Due Date" Property="model => model.DueDate" Format="d" Culture="CultureInfo.CurrentCulture" SortBy="model => model.DueDate ?? DateTime.MinValue"/>
+
+        <PropertyColumn Title="Original Estimate" Property="model => model.OriginalEstimate" Sortable="false" Required RequiredError="You must provide a Original estimate"/>
+
+        <TemplateColumn Title="Errors" Sortable="false">
+            <CellTemplate>
+                <MudList Clickable="@false" Dense="@true" DisableGutters="@true">
+                    @foreach (var error in context.Item.Errors)
+                    {
+                        <MudListItem Text="@error.Message" IconColor="@error.Color" Class="@error.ColorClass" Icon="@error.Icon"/>
+                    }
+                </MudList>
+            </CellTemplate>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Actions" Sortable="false">
+            <CellTemplate>
+                <CascadingValue Value="@Issues.GetByKey(context.Item.Key)">
+                    <CascadingValue Value="@context.Item.HasErrors">
+                        <ActionButtons/>
+                    </CascadingValue>
+                </CascadingValue>
+            </CellTemplate>
+        </TemplateColumn>
+
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 5, 10, 15, 20 })"/>
+    </PagerContent>
+</MudDataGrid>

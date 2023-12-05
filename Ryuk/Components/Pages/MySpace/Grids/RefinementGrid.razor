@@ -1,0 +1,51 @@
+﻿@using Ryuk.Extensions
+@using Ryuk.Components.Pages.MySpace.Actions
+
+@if (Issues is null || _items is null)
+{
+        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    </MudStack>
+    return;
+}
+
+<MudDataGrid @ref="grid" T="RefinementModel" Items="@_items" Dense="true">
+    <Columns>
+
+        <TemplateColumn Title="Type" SortBy="model => model.Type">
+            <CellTemplate>
+                <MudImage Src="@context.Item.TypeIconUrl"/>
+            </CellTemplate>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Status" SortBy="model => model.Status">
+            <CellTemplate>
+                <MudChip Variant="Variant.Outlined" Color="@context.Item.StatusColor">@context.Item.Status</MudChip>
+            </CellTemplate>
+        </TemplateColumn>
+
+        <TemplateColumn Title="Key" SortBy="model => model.Key">
+            <CellTemplate>
+                <MudBreadcrumbs Items="@context.Item.Breadcrumbs">
+                    <ItemTemplate Context="item">
+                        <MudLink Href="@item.Href">@item.Text</MudLink>
+                    </ItemTemplate>
+                </MudBreadcrumbs>
+            </CellTemplate>
+        </TemplateColumn>
+
+        <PropertyColumn Title="Summary" Property="model => model.Summary"/>
+
+        <TemplateColumn Title="Actions" Sortable="false">
+            <CellTemplate>
+                <CascadingValue Value="@Issues.GetByKey(context.Item.Key)">
+                    <ActionButtons/>
+                </CascadingValue>
+            </CellTemplate>
+        </TemplateColumn>
+    </Columns>
+    <PagerContent>
+        <MudDataGridPager PageSizeOptions="@(new[] { 5, 10, 15, 20 })"/>
+    </PagerContent>
+
+</MudDataGrid>

@@ -1,0 +1,23 @@
+﻿@using Ryuk.Extensions
+@using Ryuk.Model
+@using Atlassian.Jira
+@using System.Collections.Frozen
+
+@if (Issues is null)
+{
+        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    </MudStack>
+    return;
+} 
+
+<MudText Typo="Typo.h6">Open Issues</MudText>
+<MudText Typo="Typo.h2" Color="Color.Warning">@_count</MudText>
+
+@code {
+    [Parameter] public required FrozenSet<Issue>? Issues { get; set; }
+
+    int _count;
+
+    protected override void OnParametersSet() => _count = Issues?.Count(issue => issue.NotInStatus(Status.Done, Status.Cancelled, Status.Canceled)) ?? 0;
+}

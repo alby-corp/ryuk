@@ -1,0 +1,12 @@
+﻿@using Atlassian.Jira
+@foreach (var action in _actions)
+{
+    <ActionButton Action="action"/>
+}
+
+@code {
+    [CascadingParameter] public required Issue Issue { get; set; }
+    IEnumerable<IssueTransition> _actions = [];
+
+    protected override async Task OnParametersSetAsync() => _actions = await Issue.GetAvailableActionsAsync();
+}

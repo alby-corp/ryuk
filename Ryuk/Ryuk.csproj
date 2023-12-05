@@ -1,0 +1,33 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>4bafdb84-8538-442e-a791-264113b672ae</UserSecretsId>
+  </PropertyGroup>
+
+  
+  <ItemGroup>
+    <PackageReference Include="Atlassian.SDK" Version="13.0.0" />
+    <PackageReference Include="MudBlazor" Version="6.*" />
+    <PackageReference Include="System.Linq.Async" Version="6.0.1" />
+  </ItemGroup>
+
+  
+  <ItemGroup>
+    <Compile Update="Components\Pages\MySpace\Grids\RefinementGrid.razor.model.cs">
+      <DependentUpon>RefinementGrid.razor.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Components\Pages\MySpace\Grids\RefinedGrid.razor.designer.cs">
+      <DependentUpon>RefinedGrid.razor</DependentUpon>
+    </Compile>
+    <Compile Update="Components\Pages\MySpace\Grids\DevelopmentGrid.razor.model.cs">
+      <DependentUpon>DevelopmentGrid.razor.cs</DependentUpon>
+    </Compile>
+    <Compile Update="Components\Pages\MySpace\Grids\TodoGrid.razor.model.cs">
+      <DependentUpon>TodoGrid.razor.cs</DependentUpon>
+    </Compile>
+  </ItemGroup>
+  
+</Project>

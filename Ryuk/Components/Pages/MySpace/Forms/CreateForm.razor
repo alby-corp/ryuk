@@ -1,0 +1,19 @@
+﻿<MudPaper Class="pa-4">
+    <MudForm Model="@_model">
+
+        <MudTextField Label="Summary" @bind-Value="_model.Summary" For="@(() => _model.Summary)"/>
+        <MudTextField Label="Description" @bind-Value="_model.Description" For="@(() => _model.Description)"/>
+        <MudTextField Label="Ticket Id" @bind-Value="_model.Ticket" For="@(() => _model.Ticket)"/>
+        <MudTextField Label="Reporter" @bind-Value="_model.Reporter" For="@(() => _model.Reporter)"/>
+        <MudTextField Label="Assignee" @bind-Value="_model.Assignee" For="@(() => _model.Assignee)"/>
+        <MudTextField Label="Priority" @bind-Value="_model.Priority" For="@(() => _model.Priority)"/>
+        <MudTextField Label="Components" @bind-Value="_model.Components" For="@(() => _model.Components)"/>
+        <MudTextField Label="Labels" @bind-Value="_model.Labels" For="@(() => _model.Labels)"/>
+        <MudTextField Label="OriginalEstimate" @bind-Value="_model.OriginalEstimate" For="@(() => _model.OriginalEstimate)"/>
+
+        <div class="d-flex justify-end mt-4">
+            <MudButton OnClick="Close" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto">Close</MudButton>
+            <MudButton OnClick="CreateAsync" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
+        </div>
+    </MudForm>
+</MudPaper>

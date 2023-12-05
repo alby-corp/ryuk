@@ -1,0 +1,50 @@
+﻿@using static Task;
+@using Atlassian.Jira
+<MudButton Disabled="_isMoving || Disabled" OnClick="@(_ => TransactAsync())" Variant="Variant.Outlined" Color="Color.Primary" Class="ml-1">
+    @if (_isMoving)
+    {
+        <MudProgressCircular Class="ms-n1" Size="Size.Small" Indeterminate="true"/>
+        <MudText Style="white-space: nowrap" Class="ms-2">Moving</MudText>
+    }
+    else
+    {
+        <MudText Style="white-space: nowrap">@Action.To</MudText>
+    }
+</MudButton>
+
+@code {
+    [Inject] ILogger<ActionButton> Logger { get; init; } = null!;
+    [Inject] IDialogService DialogService { get; init; } = null!;
+
+    [CascadingParameter] public required Dashboard Dashboard { get; set; }
+    [CascadingParameter] public required Issue Issue { get; set; }
+    [CascadingParameter] public bool Disabled { get; set; }
+
+    [Parameter] public required IssueTransition Action { get; set; }
+
+
+    bool _isMoving;
+
+    async Task TransactAsync()
+    {
+        _isMoving = true;
+
+        try
+        {
+            await (Issue.WorkflowTransitionAsync(Action.Name) ?? CompletedTask);
+            Dashboard.NotifyChanged();
+        }
+        catch (Exception e)
+        {
+            var message = $"Cannot moving {Issue?.Key ?? "empty"} to {Action.To.Name}!";
+
+            Logger.LogError(e, message);
+            await DialogService.ShowMessageBox("Error", message);
+        }
+        finally
+        {
+            _isMoving = false;
+        }
+    }
+
+}

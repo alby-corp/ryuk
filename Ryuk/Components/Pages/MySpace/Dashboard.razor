@@ -1,0 +1,55 @@
+﻿@page "/my-space"
+@using Ryuk.Components.Pages.MySpace.Badges
+@using Ryuk.Components.Pages.MySpace.Grids
+
+<CascadingValue Value="@(this)">
+    <MudGrid>
+        <MudItem xs="12" sm="6" md="12" lg="4" xl="4" xxl="4">
+            <MudPaper Class="d-flex align-center justify-space-around mud-width-full py-8">
+                <OpenBadge Issues="_issues"/>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="6" md="12" lg="4" xl="4" xxl="4">
+            <MudPaper Class="d-flex align-center justify-space-around mud-width-full py-8">
+                <ClosedBadge Issues="_issues"/>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="12" md="12" lg="4" xl="4" xxl="4">
+            <MudPaper Class="d-flex align-center justify-space-around mud-width-full py-8">
+                <TotalBadge Issues="_issues" MonthsAgo="MonthsAgo"></TotalBadge>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="12" md="12" lg="4" xl="4" xxl="4">
+                <MudButton OnClick="Create" Variant="Variant.Outlined" Color="Color.Primary" Class="d-flex align-center justify-space-around mud-width-full py-8">
+                    Create
+                </MudButton>
+        </MudItem>
+
+        <MudItem xs="12" sm="12" md="12" lg="12" xl="12" xxl="12">
+            <MudPaper>
+                <RefinementGrid Issues="_issues"/>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="12" md="12" lg="12" xl="12" xxl="12">
+            <MudPaper>
+                <RefinedGrid Issues="_issues"/>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="12" md="12" lg="12" xl="12" xxl="12">
+            <MudPaper>
+                <TodoGrid Issues="_issues"/>
+            </MudPaper>
+        </MudItem>
+
+        <MudItem xs="12" sm="12" md="12" lg="12" xl="12" xxl="12">
+            <MudPaper>
+                <DevelopmentGrid Issues="_issues"/>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+</CascadingValue>
