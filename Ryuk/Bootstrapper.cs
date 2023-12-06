@@ -1,4 +1,5 @@
 ﻿using MudBlazor.Services;
+using Ryuk.Services;
 
 namespace Ryuk;
 
@@ -11,7 +12,13 @@ public static class Bootstrapper
     public static void AddRyuk(this WebApplicationBuilder builder)
     {
         builder.AddClients();
+        builder.AddServices();
         builder.Services.AddMudServices();
+    }
+
+    static void AddServices(this WebApplicationBuilder builder)
+    {
+        builder.Services.AddScoped<CacheService>();
     }
 
     static void AddClients(this WebApplicationBuilder builder)

@@ -54,4 +54,26 @@ public static class JiraExtensions
 
         foreach (var error in errors) yield return error;
     }
+    
+    public static async IAsyncEnumerable<KeyValuePair<string, string>> GetStatues(this Jira jira, string key)
+    {
+        var request = new RestRequest($"rest/api/2/issue/project/{key}/statuses")
+        {
+            Method = Method.GET,
+            RequestFormat = DataFormat.Json
+        };
+
+        var errors = new Dictionary<string, string>();
+
+        try
+        {
+            await jira.RestClient.ExecuteRequestAsync(request);
+        }
+        catch (Exception e)
+        {
+            errors = e.ExtractErrors();
+        }
+
+        foreach (var error in errors) yield return error;
+    }
 }

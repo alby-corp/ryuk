@@ -28,6 +28,9 @@
     <Compile Update="Components\Pages\MySpace\Grids\TodoGrid.razor.model.cs">
       <DependentUpon>TodoGrid.razor.cs</DependentUpon>
     </Compile>
+    <Compile Update="Components\Pages\Filters\Filter.razor.model.cs">
+      <DependentUpon>Filter.razor.cs</DependentUpon>
+    </Compile>
   </ItemGroup>
   
 </Project>

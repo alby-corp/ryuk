@@ -1,0 +1,153 @@
+﻿@page "/filter"
+@using Atlassian.Jira
+@using Ryuk.Services
+
+<EditForm Model="_model">
+    <DataAnnotationsValidator/>
+    <MudGrid>
+        <MudItem xs="12" sm="12" md="6" lg="6" xl="6" xxl="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudSelect
+                        MultiSelection="true"
+                        SelectedValues="SelectedProjects"
+                        SelectedValuesChanged=@SelectedProjectChanged
+                        T="Project"
+                        Label="Projects"
+                        AdornmentIcon="@Icons.Material.Filled.Search"
+                        AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var project in Projects)
+                        {
+                            <MudSelectItem T="Project" Value="@project">
+                                <MudImage Src="@project.AvatarUrls.Medium" Height="30" Width="30"/> @project.Key
+                            </MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        
+        <MudItem xs="12" sm="12" md="6" lg="6" xl="6" xxl="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudSelect
+                        MultiSelection="true"
+                        SelectedValues="SelectedIncludedComponents"
+                        SelectedValuesChanged="SelectedIncludedComponentsChanged"
+                        T="ProjectComponent"
+                        Label="Included Components"
+                        AdornmentIcon="@Icons.Material.Filled.Search"
+                        AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var component in Cache.SelectedComponents)
+                        {
+                            <MudSelectItem Value="@component" Disabled=@(SelectedExcludedComponents.Contains(component))>@component.ProjectKey | @component.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        
+        <MudItem xs="12" sm="12" md="6" lg="6" xl="6" xxl="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudSelect
+                        MultiSelection="true"
+                        SelectedValues="SelectedExcludedComponents"
+                        SelectedValuesChanged="SelectedExcludedComponentsChanged"
+                        T="ProjectComponent"
+                        Label="Excluded Projects"
+                        AdornmentIcon="@Icons.Material.Filled.Search"
+                        AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var tuple in Cache.SelectedComponents)
+                        {
+                            <MudSelectItem Value="@tuple" Disabled=@(SelectedIncludedComponents.Contains(tuple))>@tuple.ProjectKey | @tuple.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        
+        <MudItem xs="12" sm="12" md="6" lg="6" xl="6" xxl="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudSelect
+                        MultiSelection="true"
+                        SelectedValues="SelectedIncludedTypes"
+                        SelectedValuesChanged="SelectedIncludedTypesChanged"
+                        T="IssueType"
+                        Label="Included Types"
+                        AdornmentIcon="@Icons.Material.Filled.Search"
+                        AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var type in Cache.SelectedTypes)
+                        {
+                            <MudSelectItem Value="@type" Disabled=@(SelectedExcludedTypes.Contains(type))>@type.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        
+        
+        <MudItem xs="12" sm="12" md="6" lg="6" xl="6" xxl="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudSelect
+                        MultiSelection="true"
+                        SelectedValues="SelectedExcludedTypes"
+                        SelectedValuesChanged="SelectedExcludedTypesChanged"
+                        T="IssueType"
+                        Label="Excluded Types"
+                        AdornmentIcon="@Icons.Material.Filled.Search"
+                        AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var type in Cache.SelectedTypes)
+                        {
+                            <MudSelectItem Value="@type" Disabled=@(SelectedIncludedTypes.Contains(type))>@type.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        
+        <MudItem xs="12" sm="12" md="6" lg="6" xl="6" xxl="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudSelect
+                        MultiSelection="true"
+                        SelectedValues="SelectedIncludedStatues"
+                        SelectedValuesChanged="SelectedIncludedStatuesChanged"
+                        T="IssueStatus"
+                        Label="Included Statues"
+                        AdornmentIcon="@Icons.Material.Filled.Search"
+                        AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var type in Cache.SelectedStatues)
+                        {
+                            <MudSelectItem Value="@type" Disabled=@(SelectedExcludedStatues.Contains(type))>@type.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        
+        
+        <MudItem xs="12" sm="12" md="6" lg="6" xl="6" xxl="6">
+            <MudCard>
+                <MudCardContent>
+                    <MudSelect
+                        MultiSelection="true"
+                        SelectedValues="SelectedExcludedStatues"
+                        SelectedValuesChanged="SelectedExcludedStatuesChanged"
+                        T="IssueStatus"
+                        Label="Excluded Statues"
+                        AdornmentIcon="@Icons.Material.Filled.Search"
+                        AnchorOrigin="Origin.BottomCenter">
+                        @foreach (var stat in Cache.SelectedStatues)
+                        {
+                            <MudSelectItem Value="@stat" Disabled=@(SelectedIncludedStatues.Contains(stat))>@stat.Name</MudSelectItem>
+                        }
+                    </MudSelect>
+                </MudCardContent>
+            </MudCard>
+        </MudItem>
+        
+    </MudGrid>
+</EditForm>
