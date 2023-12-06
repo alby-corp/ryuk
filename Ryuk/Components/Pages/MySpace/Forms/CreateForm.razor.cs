@@ -1,39 +1,74 @@
-﻿using Atlassian.Jira;
+﻿namespace Ryuk.Components.Pages.MySpace.Forms;
+
+using Atlassian.Jira;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-
-namespace Ryuk.Components.Pages.MySpace.Forms;
+using Extensions;
 
 public partial class CreateForm
 {
-    readonly CreateModel _model = new();
+    readonly CreateModel model = new();
 
-    Jira _jira;
+    Jira jira = null!;
 
     [CascadingParameter] public required MudDialogInstance MudDialog { get; set; }
     [Inject] IServiceProvider Provider { get; init; } = null!;
+
+    IEnumerable<IssuePriority> priorities = [];
+    IEnumerable<ProjectComponent> components = [];
+    IEnumerable<IssueType> types = [];
+    const string projectKey = "EIMMS";
 
     void Close() => MudDialog.Close(DialogResult.Ok(true));
 
     protected override async Task OnInitializedAsync()
     {
-        _jira = Provider.GetRequiredKeyedService<Jira>("Company1");
+        jira = Provider.GetRequiredKeyedService<Jira>(Key);
 
-        var project = await _jira.Projects.GetProjectAsync("EIMMS");
-        var components = await project.GetComponentsAsync();
-        var types = await project.GetIssueTypesAsync();
-        var priorities = await _jira.Priorities.GetPrioritiesAsync();
+        var project = await jira.Projects.GetProjectAsync(projectKey);
+        components = await project.GetComponentsAsync();
+        types = await project.GetIssueTypesAsync();
+        priorities = await jira.Priorities.GetPrioritiesAsync();
+    }
+    async void Validate()
+    {
+        await form.Validate();
+        if (success)
+        {
+            await CreateAsync();
+        }
     }
 
     async Task CreateAsync()
     {
-        var issue = _jira.CreateIssue("EIMMS");
+        try
+        {
+            var issue = jira.CreateIssue(projectKey);
 
-        issue.Summary = _model.Summary;
-        issue.Description = _model.Description;
-        issue.Reporter = _model.Reporter;
-        issue.Assignee = _model.Assignee;
+            issue.Type = model.Type;
+            issue.Summary = string.IsNullOrEmpty(model.Ticket) ? model.Summary : string.Concat(model.Ticket, "|", model.Summary);
+            issue.Description = model.Description;
+            issue.Assignee = (model.Assignee != null) ? model.Assignee.Username : "";
+            issue.Priority = model.Priority;
+            model.Components.ToList().ForEach(issue.Components.Add);
+            issue.Labels.Add(model.Labels);
 
-        await issue.SaveChangesAsync();
+            var resultIssue = await issue.SaveChangesAsync();
+            
+            if(!string.IsNullOrEmpty(model.OriginalEstimate) && resultIssue != null)
+            {
+                var errors = await jira.UpdateOriginalEstimateAsync(resultIssue.Key.ToString(), model.OriginalEstimate).ToListAsync();
+                if (errors.Any()) await DialogService.ShowMessageBox("Error", string.Join("; ", errors));
+            }
+        }
+        catch (Exception e)
+        {
+            await DialogService.ShowMessageBox("Error", e.Message);
+        }
+    }
+
+    async Task<IEnumerable<JiraUser>> GetAssignee(string value)
+    {
+        return await jira.Users.SearchAssignableUsersForProjectAsync(value, projectKey, 0, 50);
     }
 }

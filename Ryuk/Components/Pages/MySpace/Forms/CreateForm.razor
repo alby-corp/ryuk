@@ -1,19 +1,38 @@
-﻿<MudPaper Class="pa-4">
-    <MudForm Model="@_model">
+﻿@using Atlassian.Jira;
 
-        <MudTextField Label="Summary" @bind-Value="_model.Summary" For="@(() => _model.Summary)"/>
-        <MudTextField Label="Description" @bind-Value="_model.Description" For="@(() => _model.Description)"/>
-        <MudTextField Label="Ticket Id" @bind-Value="_model.Ticket" For="@(() => _model.Ticket)"/>
-        <MudTextField Label="Reporter" @bind-Value="_model.Reporter" For="@(() => _model.Reporter)"/>
-        <MudTextField Label="Assignee" @bind-Value="_model.Assignee" For="@(() => _model.Assignee)"/>
-        <MudTextField Label="Priority" @bind-Value="_model.Priority" For="@(() => _model.Priority)"/>
-        <MudTextField Label="Components" @bind-Value="_model.Components" For="@(() => _model.Components)"/>
-        <MudTextField Label="Labels" @bind-Value="_model.Labels" For="@(() => _model.Labels)"/>
-        <MudTextField Label="OriginalEstimate" @bind-Value="_model.OriginalEstimate" For="@(() => _model.OriginalEstimate)"/>
+<MudPaper Class="pa-4">
+    <MudForm Model="@model" @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
+        <MudSelect Label="Type" @bind-Value="model.Type" Required RequiredError="You must select a Type">
+            @foreach (var type in types)
+            {
+                <MudSelectItem Value="@type">@type.Name</MudSelectItem>
+            }
+        </MudSelect>
+        
+        <MudTextField Label="Summary" @bind-Value="model.Summary" For="@(() => model.Summary)" Required RequiredError="You must select a Summary" Validation="@(new Func<string, int, IEnumerable<string>>(model.ValidateMinCharacters))"/>
+        <MudTextField Label="Description" @bind-Value="model.Description" For="@(() => model.Description)" Lines="8"/>
+        <MudTextField Label="Ticket Id" @bind-Value="model.Ticket" For="@(() => model.Ticket)" Validation="@(new Func<string, IEnumerable<string>>(model.ValidateTicketId))"/>
+        <MudAutocomplete Label="Assignee" @bind-Value="model.Assignee" T="JiraUser" ResetValueOnEmptyText="true" SearchFunc="GetAssignee" ShowProgressIndicator="true"/>
 
-        <div class="d-flex justify-end mt-4">
+        <MudSelect Label="Priority" @bind-Value="model.Priority" Required RequiredError="You must select a Priority">
+            @foreach (var priority in priorities)
+            {
+                <MudSelectItem Value="@priority"><img src="@priority.IconUrl" height="12" class="mr-1" />@priority.Name</MudSelectItem>
+            }
+        </MudSelect>
+
+        <MudSelect Label="Components" @bind-SelectedValues="model.Components" MultiSelection="true">
+            @foreach (var component in components)
+            {
+                <MudSelectItem Value="@component">@component.Name</MudSelectItem>
+            }
+        </MudSelect>
+
+        <MudTextField Label="Labels" @bind-Value="model.Labels" For="@(() => model.Labels)"/>
+        <MudTextField Label="OriginalEstimate" @bind-Value="model.OriginalEstimate" For="@(() => model.OriginalEstimate)"/>
+        <MudStack Row Justify="Justify.FlexEnd" AlignItems="AlignItems.End" Class="mt-2">
             <MudButton OnClick="Close" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto">Close</MudButton>
-            <MudButton OnClick="CreateAsync" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
-        </div>
+            <MudButton OnClick="Validate" Variant="Variant.Filled" Color="Color.Primary">Create</MudButton>
+        </MudStack>
     </MudForm>
-</MudPaper>
+ </MudPaper>
