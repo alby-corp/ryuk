@@ -44,7 +44,8 @@
         
         <PropertyColumn Title="Original Estimate" Property="model => model.OriginalEstimate" SortBy="model => model.OriginalEstimateInSeconds" Required>
             <EditTemplate>
-                <MudTextField Label="Original Estimate"
+                <MudTextField Mask=tagMask
+                              Label="Original Estimate"
                               @bind-Value="@context.Item.OriginalEstimate" Variant="Variant.Text"
                               Required RequiredError="Provide a Original Estimate"/>
             </EditTemplate>

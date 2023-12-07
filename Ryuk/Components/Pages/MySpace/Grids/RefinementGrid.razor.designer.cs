@@ -9,11 +9,9 @@ using static Task;
 
 public partial class RefinementGrid : IDashboardGrid
 {
-    [Inject] IServiceProvider Provider { get; init; } = null!;
+    private readonly IMask tagMask = new RegexMask(@"");
     [Inject] IDialogService  DialogService { get; set; } = null!;
     
     MudDataGrid<RefinementModel> grid;
-    Jira jira = null!;
-
     public Task ReloadAsync() => grid?.ReloadServerData() ?? CompletedTask;
 }

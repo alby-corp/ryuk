@@ -1,4 +1,5 @@
-﻿using Atlassian.Jira;
+﻿using System.ComponentModel.DataAnnotations;
+using Atlassian.Jira;
 using MudBlazor;
 using Ryuk.Extensions;
 
@@ -13,6 +14,7 @@ public class RefinementModel(Issue? issue)
     public string Key { get; } = issue?.Key.Value ?? string.Empty;
     public List<BreadcrumbItem> Breadcrumbs { get; } = issue?.ToBreadcrumbs() ?? [];
 
+    
     public string? Status { get; } = issue?.Status.Name;
     public Color StatusColor { get; } = issue?.StatusColor() ?? Color.Transparent;
 
