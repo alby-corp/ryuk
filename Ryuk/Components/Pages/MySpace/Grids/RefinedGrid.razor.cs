@@ -9,6 +9,9 @@ namespace Ryuk.Components.Pages.MySpace.Grids;
 public partial class RefinedGrid
 {
     FrozenSet<RefinedModel>? _items;
+    [Inject] IServiceProvider Provider { get; init; } = null!;
+    
+    Jira jira = null!;
 
     [Parameter] public required FrozenSet<Issue>? Issues { get; set; }
 

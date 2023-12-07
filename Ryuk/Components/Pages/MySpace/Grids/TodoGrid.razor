@@ -11,6 +11,9 @@
 }
 
 <MudDataGrid @ref="grid" T="ToDoModel" Items="@_items" Dense="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">ToDo Issues</MudText>
+    </ToolBarContent>
     <Columns>
 
         <TemplateColumn Title="Type" SortBy="model => model.Type">
