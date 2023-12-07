@@ -1,16 +1,26 @@
-﻿namespace Ryuk.Extensions;
-
-using Atlassian.Jira;
-using Model;
+﻿using Atlassian.Jira;
 using MudBlazor;
 using MudBlazor.Extensions;
+using Ryuk.Model;
+
+namespace Ryuk.Extensions;
 
 public static class IssueExtension
 {
-    public static Issue GetByKey(this IEnumerable<Issue> issues, string key) => issues.Single(issue => string.Equals(issue.Key.Value, key, StringComparison.InvariantCultureIgnoreCase));
+    public static Issue GetByKey(this IEnumerable<Issue> issues, string key)
+    {
+        return issues.Single(issue => string.Equals(issue.Key.Value, key, StringComparison.InvariantCultureIgnoreCase));
+    }
 
-    public static bool InStatus(this Issue issue, params string[] statuses) => statuses.Contains(issue.Status.Name, StringComparer.InvariantCultureIgnoreCase);
-    public static bool NotInStatus(this Issue issue, params string[] statuses) => !statuses.Contains(issue.Status.Name, StringComparer.InvariantCultureIgnoreCase);
+    public static bool InStatus(this Issue issue, params string[] statuses)
+    {
+        return statuses.Contains(issue.Status.Name, StringComparer.InvariantCultureIgnoreCase);
+    }
+
+    public static bool NotInStatus(this Issue issue, params string[] statuses)
+    {
+        return !statuses.Contains(issue.Status.Name, StringComparer.InvariantCultureIgnoreCase);
+    }
 
     public static Color StatusColor(this Issue issue)
     {
@@ -33,9 +43,15 @@ public static class IssueExtension
         };
     }
 
-    public static string FormattedStartDate(this Issue issue) => issue.StartDate().ToLocalDateOnly();
+    public static string FormattedStartDate(this Issue issue)
+    {
+        return issue.StartDate().ToLocalDateOnly();
+    }
 
-    public static string FormattedDueDate(this Issue issue) => issue.DueDate.ToLocalDateOnly();
+    public static string FormattedDueDate(this Issue issue)
+    {
+        return issue.DueDate.ToLocalDateOnly();
+    }
 
     public static DateTime? StartDate(this Issue issue)
     {
@@ -50,7 +66,8 @@ public static class IssueExtension
     {
         const string fieldId = "customfield_10421";
 
-        var field = issue.CustomFields.SingleOrDefault(field => string.Equals(field.Id, fieldId, StringComparison.InvariantCultureIgnoreCase));
+        var field = issue.CustomFields.SingleOrDefault(field =>
+            string.Equals(field.Id, fieldId, StringComparison.InvariantCultureIgnoreCase));
 
         if (field is null)
         {
@@ -66,9 +83,15 @@ public static class IssueExtension
     {
         var items = new List<BreadcrumbItem>();
 
-        if (!string.IsNullOrEmpty(issue.ParentIssueKey)) items.Add(new(issue.ParentIssueKey, $"{issue.Jira.Url}browse/{issue.ParentIssueKey}"));
+        if (!string.IsNullOrEmpty(issue.ParentIssueKey))
+            items.Add(new(issue.ParentIssueKey, $"{issue.Jira.Url}browse/{issue.ParentIssueKey}"));
         items.Add(new(issue.Key.Value, $"{issue.Jira.Url}browse/{issue.Key}"));
 
         return items;
+    }
+
+    public static void AddComponents(this Issue issue, IEnumerable<ProjectComponent> components)
+    {
+        foreach (var component in components) issue.Components.Add(component);
     }
 }

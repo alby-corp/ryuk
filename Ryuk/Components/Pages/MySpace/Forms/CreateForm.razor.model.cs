@@ -1,7 +1,7 @@
-﻿namespace Ryuk.Components.Pages.MySpace.Forms;
+﻿using Atlassian.Jira;
+using Ryuk.Extensions;
 
-using Atlassian.Jira;
-using System.Text.RegularExpressions;
+namespace Ryuk.Components.Pages.MySpace.Forms;
 
 public class CreateModel
 {
@@ -11,21 +11,19 @@ public class CreateModel
     public JiraUser? Assignee { get; set; }
     public IssuePriority Priority { get; set; } = null!;
     public IssueType Type { get; set; } = null!;
-    public IEnumerable<ProjectComponent> Components { get; set; } = null!;
+    public IEnumerable<ProjectComponent> Components { get; set; } = [];
     public string Labels { get; set; } = string.Empty;
     public string OriginalEstimate { get; set; } = string.Empty;
 
-    public IEnumerable<string> ValidateMinCharacters(string ch, int minCharacters)
+    public static IEnumerable<string> ValidateMinCharacters(string summary, int minCharacters)
     {
-        if (!string.IsNullOrEmpty(ch) && ch?.Length < minCharacters)
+        if (!string.IsNullOrEmpty(summary) && summary.Length < minCharacters)
             yield return $"Min {minCharacters} characters";
     }
 
-    public IEnumerable<string> ValidateTicketId(string ch)
+    public static IEnumerable<string> ValidateTicketId(string ticketId)
     {
-        Regex regex = new Regex(@"^[A-Za-z]{3}-\d{4}$");
-
-        if (!string.IsNullOrEmpty(ch) && !regex.IsMatch(ch))
+        if (!string.IsNullOrEmpty(ticketId) && !Regex.IssueKey().IsMatch(ticketId))
             yield return "Incorrect TicketID format";
     }
 }

@@ -9,7 +9,9 @@ public partial class CreateForm
 
     const string Key = "Company1";
     const uint MinCharacters = 4;
+    
     bool success;
-    string[] errors = { };
-    MudForm form = null!;
+    string[] errors = [];
+    
+    MudForm? form;
 }
