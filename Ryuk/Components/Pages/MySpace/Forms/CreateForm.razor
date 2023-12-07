@@ -17,11 +17,11 @@
         <MudSelect Label="Priority" @bind-Value="model.Priority" Required RequiredError="You must select a Priority">
             @foreach (var priority in priorities)
             {
-                <MudSelectItem Value="@priority"><img src="@priority.IconUrl" height="12" class="mr-1" />@priority.Name</MudSelectItem>
+                <MudSelectItem Value="@priority"><MudImage src="@priority.IconUrl" Height="12" Class="mr-1" />@priority.Name</MudSelectItem>
             }
         </MudSelect>
 
-        <MudSelect Label="Components" @bind-SelectedValues="model.Components" MultiSelection="true">
+        <MudSelect Label="Components" @bind-SelectedValues="model.Components" MultiSelection="true" Required RequiredError="You must select a Components">
             @foreach (var component in components)
             {
                 <MudSelectItem Value="@component">@component.Name</MudSelectItem>

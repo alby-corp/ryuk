@@ -26,10 +26,11 @@ public partial class CreateForm
         jira = Provider.GetRequiredKeyedService<Jira>(Key);
 
         var project = await jira.Projects.GetProjectAsync(projectKey);
-        components = await project.GetComponentsAsync();
-        types = await project.GetIssueTypesAsync();
-        priorities = await jira.Priorities.GetPrioritiesAsync();
+        components = (await project.GetComponentsAsync()).OrderBy(component => component.Name).ToList();
+        types = (await project.GetIssueTypesAsync()).OrderBy(type => type.Name).ToList();
+        priorities = (await jira.Priorities.GetPrioritiesAsync()).OrderBy(priority => priority.Name).ToList();
     }
+    
     async void Validate()
     {
         await form.Validate();
