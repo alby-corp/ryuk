@@ -94,4 +94,9 @@ public static class IssueExtension
     {
         foreach (var component in components) issue.Components.Add(component);
     }
+    
+    public static void AddLabels(this Issue issue, IEnumerable<string> labels)
+    {
+        foreach (var label in labels) issue.Labels.Add(label);
+    }
 }

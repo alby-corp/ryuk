@@ -10,22 +10,23 @@
         </MudSelect>
 
         <MudTextField
-            Label="Summary"
-            @bind-Value="_model.Summary" For="@(() => _model.Summary)"
+            Label="Summary" For="@(() => _model.Summary)"
+            @bind-Value="_model.Summary"
             Required RequiredError="You must select a Summary"
-            Validation="@(new Func<string, int, IEnumerable<string>>(CreateModel.ValidateMinCharacters))"/>
+            Validation="@(new Func<string, int, IEnumerable<string>>(CreateModel.ValidateMinCharacters))"
+            Clearable="true" />
 
         <MudTextField
-            Label="Description"
+            Label="Description" For="@(() => _model.Description)"
             @bind-Value="_model.Description"
-            For="@(() => _model.Description)"
-            Lines="8"/>
+            Lines="8"
+            Clearable="true" />
 
         <MudTextField
-            Label="Ticket Id"
+            Label="Ticket Id" For="@(() => _model.Ticket)"
             @bind-Value="_model.Ticket"
-            For="@(() => _model.Ticket)"
-            Validation="@(new Func<string, IEnumerable<string>>(CreateModel.ValidateTicketId))"/>
+            Validation="@(new Func<string, IEnumerable<string>>(CreateModel.ValidateTicketId))"
+            Clearable="true" />
 
         <MudAutocomplete
             Label="Assignee"
@@ -33,7 +34,9 @@
             T="JiraUser"
             ResetValueOnEmptyText="true"
             SearchFunc="GetAssignee"
-            ShowProgressIndicator="true"/>
+            ShowProgressIndicator="true"
+            AdornmentIcon="@Icons.Material.Filled.Search"
+            AdornmentColor="Color.Dark" />
 
         <MudSelect Label="Priority" @bind-Value="_model.Priority" Required RequiredError="You must select a Priority">
             @foreach (var priority in _priorities)
@@ -51,9 +54,21 @@
             }
         </MudSelect>
 
-        <MudTextField Label="Labels" @bind-Value="_model.Labels" For="@(() => _model.Labels)"/>
+        <MudTextField Label="Labels" For="@(() => _model.Labels)"
+                      @bind-Value="_model.Labels"
+                      TextChanged="@SetValue"
+                      Clearable="true" />
 
-        <MudTextField Label="OriginalEstimate" @bind-Value="_model.OriginalEstimate" For="@(() => _model.OriginalEstimate)"/>
+        <MudChipSet AllClosable="true" OnClose="@Closed">
+            @foreach (var label in _labels)
+            {
+                <MudChip Text="@label"></MudChip>
+            }
+        </MudChipSet>
+
+        <MudTextField
+            Label="OriginalEstimate" For="@(() => _model.OriginalEstimate)"
+            @bind-Value="_model.OriginalEstimate"/>
 
         <MudStack Row Justify="Justify.FlexEnd" AlignItems="AlignItems.End" Class="mt-2">
             <MudButton OnClick="@Close" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto">Close</MudButton>

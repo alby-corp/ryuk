@@ -15,6 +15,7 @@ public partial class CreateForm
 
     IEnumerable<IssuePriority> _priorities = [];
     IEnumerable<IssueType> _types = [];
+    List<string> _labels = new();
 
     [CascadingParameter] public required MudDialogInstance MudDialog { get; set; }
     [Inject] IServiceProvider Provider { get; init; } = null!;
@@ -54,8 +55,8 @@ public partial class CreateForm
             issue.Description = _model.Description;
             issue.Assignee = _model.Assignee is not null ? _model.Assignee.Username : string.Empty;
             issue.Priority = _model.Priority;
-            issue.Labels.Add(_model.Labels);
             issue.AddComponents(_model.Components);
+            issue.AddLabels(_labels);
 
             var resultIssue = await issue.SaveChangesAsync();
 
@@ -76,4 +77,12 @@ public partial class CreateForm
     {
         return _jira.Users.SearchAssignableUsersForProjectAsync(value, ProjectKey);
     }
+    
+    void SetValue()
+    {
+        if (!string.IsNullOrEmpty(_model.Labels))
+            _labels.Add(_model.Labels);
+    }
+
+    void Closed(MudChip chip) => _labels.Remove(chip.Text);
 }
