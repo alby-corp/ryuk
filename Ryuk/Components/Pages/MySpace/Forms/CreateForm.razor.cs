@@ -36,12 +36,6 @@ public partial class CreateForm
         _priorities = (await _jira.Priorities.GetPrioritiesAsync()).OrderBy(priority => priority.Name).ToList();
     }
 
-    async void Validate()
-    {
-        await form!.Validate();
-        if (success) await CreateAsync();
-    }
-
     async Task CreateAsync()
     {
         try

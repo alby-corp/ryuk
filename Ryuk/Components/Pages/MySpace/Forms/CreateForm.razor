@@ -1,8 +1,8 @@
 ﻿@using Atlassian.Jira
 <MudPaper Class="pa-4">
-    <MudForm Model="@_model" @ref="form" @bind-IsValid="@success" @bind-Errors="@errors">
-
-        <MudSelect Label="Type" @bind-Value="_model.Type" Required RequiredError="You must select a Type">
+    <EditForm Model="@_model" @bind-IsValid="@success" @bind-Errors="@errors" OnValidSubmit="CreateAsync">
+        <DataAnnotationsValidator/>
+        <MudSelect Label="Type" For="@(() => _model.Type)" @bind-Value="_model.Type">
             @foreach (var type in _types)
             {
                 <MudSelectItem Value="@type">@type.Name</MudSelectItem>
@@ -12,8 +12,6 @@
         <MudTextField
             Label="Summary" For="@(() => _model.Summary)"
             @bind-Value="_model.Summary"
-            Required RequiredError="You must select a Summary"
-            Validation="@(new Func<string, int, IEnumerable<string>>(CreateModel.ValidateMinCharacters))"
             Clearable="true" />
 
         <MudTextField
@@ -25,7 +23,6 @@
         <MudTextField
             Label="Ticket Id" For="@(() => _model.Ticket)"
             @bind-Value="_model.Ticket"
-            Validation="@(new Func<string, IEnumerable<string>>(CreateModel.ValidateTicketId))"
             Clearable="true" />
 
         <MudAutocomplete
@@ -38,7 +35,7 @@
             AdornmentIcon="@Icons.Material.Filled.Search"
             AdornmentColor="Color.Dark" />
 
-        <MudSelect Label="Priority" @bind-Value="_model.Priority" Required RequiredError="You must select a Priority">
+        <MudSelect Label="Priority" For="@(() => _model.Priority)" @bind-Value="_model.Priority">
             @foreach (var priority in _priorities)
             {
                 <MudSelectItem Value="@priority">
@@ -47,7 +44,7 @@
             }
         </MudSelect>
 
-        <MudSelect Label="Components" @bind-SelectedValues="_model.Components" MultiSelection="true" Required RequiredError="You must select a Components">
+        <MudSelect Label="Components" @bind-SelectedValues="_model.Components" MultiSelection="true">
             @foreach (var component in _components)
             {
                 <MudSelectItem Value="@component">@component.Name</MudSelectItem>
@@ -59,7 +56,7 @@
                       TextChanged="@SetValue"
                       Clearable="true" />
 
-        <MudChipSet AllClosable="true" OnClose="@Closed">
+        <MudChipSet AllClosable="true" OnClose="@Closed" Class="mt-2">
             @foreach (var label in _labels)
             {
                 <MudChip Text="@label"></MudChip>
@@ -72,7 +69,7 @@
 
         <MudStack Row Justify="Justify.FlexEnd" AlignItems="AlignItems.End" Class="mt-2">
             <MudButton OnClick="@Close" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto">Close</MudButton>
-            <MudButton OnClick="@Validate" Variant="Variant.Filled" Color="Color.Primary">Create</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Create</MudButton>
         </MudStack>
-    </MudForm>
+    </EditForm>
 </MudPaper>
