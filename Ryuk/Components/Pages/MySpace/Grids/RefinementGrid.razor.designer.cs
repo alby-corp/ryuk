@@ -9,7 +9,6 @@ using static Task;
 
 public partial class RefinementGrid : IDashboardGrid
 {
-    private readonly IMask tagMask = new RegexMask(@"");
     [Inject] IDialogService  DialogService { get; set; } = null!;
     
     MudDataGrid<RefinementModel> grid;
