@@ -1,7 +1,5 @@
 ﻿@using Ryuk.Extensions
 @using Ryuk.Components.Pages.MySpace.Actions
-@using System.Globalization
-
 @if (Issues is null || _items is null)
 {
     <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
@@ -11,7 +9,7 @@
 }
 
 <MudDataGrid @ref="grid" T="RefinementModel" Items="@_items" Dense="true"
-    EditMode="DataGridEditMode.Form" EditTrigger="DataGridEditTrigger.Manual" ReadOnly="@false" CommittedItemChanges="CommittedItemChanges">
+             EditMode="DataGridEditMode.Form" EditTrigger="DataGridEditTrigger.Manual" ReadOnly="@false" CommittedItemChanges="CommittedItemChanges">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Refinement Issues</MudText>
     </ToolBarContent>
@@ -43,14 +41,16 @@
             <CellTemplate>
                 @context.Item.Summary
             </CellTemplate>
-            </TemplateColumn>
-        
+        </TemplateColumn>
+
         <PropertyColumn Title="Original Estimate" Property="model => model.OriginalEstimate" SortBy="model => model.OriginalEstimateInSeconds" Required>
             <EditTemplate>
-                <MudTextField Mask=tagMask
-                              Label="Original Estimate"
-                              @bind-Value="@context.Item.OriginalEstimate" Variant="Variant.Text"
-                              Required RequiredError="Provide a Original Estimate"/>
+                <MudTextField
+                    Mask="tagMask"
+                    Label="Original Estimate"
+                    For="@(() => context.Item.OriginalEstimate)"
+                    @bind-Value="@context.Item.OriginalEstimate" Variant="Variant.Text"
+                    Required RequiredError="Provide a Original Estimate"/>
             </EditTemplate>
         </PropertyColumn>
 

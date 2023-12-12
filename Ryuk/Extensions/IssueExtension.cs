@@ -4,13 +4,18 @@ using Atlassian.Jira;
 using Model;
 using MudBlazor;
 using MudBlazor.Extensions;
+using IssueChangeLogItem = Model.IssueChangeLogItem;
 
 public static class IssueExtension
 {
-    public static Issue GetByKey(this IEnumerable<Issue> issues, string key) => issues.Single(issue => string.Equals(issue.Key.Value, key, StringComparison.InvariantCultureIgnoreCase));
+    public static Issue GetByKey(this IEnumerable<Issue> issues, string key) => issues.Single(issue =>
+        string.Equals(issue.Key.Value, key, StringComparison.InvariantCultureIgnoreCase));
 
-    public static bool InStatus(this Issue issue, params string[] statuses) => statuses.Contains(issue.Status.Name, StringComparer.InvariantCultureIgnoreCase);
-    public static bool NotInStatus(this Issue issue, params string[] statuses) => !statuses.Contains(issue.Status.Name, StringComparer.InvariantCultureIgnoreCase);
+    public static bool InStatus(this Issue issue, params string[] statuses) =>
+        statuses.Contains(issue.Status.Name, StringComparer.InvariantCultureIgnoreCase);
+
+    public static bool NotInStatus(this Issue issue, params string[] statuses) =>
+        !statuses.Contains(issue.Status.Name, StringComparer.InvariantCultureIgnoreCase);
 
     public static Color StatusColor(this Issue issue)
     {
@@ -50,7 +55,8 @@ public static class IssueExtension
     {
         const string fieldId = "customfield_10421";
 
-        var field = issue.CustomFields.SingleOrDefault(field => string.Equals(field.Id, fieldId, StringComparison.InvariantCultureIgnoreCase));
+        var field = issue.CustomFields.SingleOrDefault(field =>
+            string.Equals(field.Id, fieldId, StringComparison.InvariantCultureIgnoreCase));
 
         if (field is null)
         {
@@ -66,9 +72,14 @@ public static class IssueExtension
     {
         var items = new List<BreadcrumbItem>();
 
-        if (!string.IsNullOrEmpty(issue.ParentIssueKey)) items.Add(new(issue.ParentIssueKey, $"{issue.Jira.Url}browse/{issue.ParentIssueKey}"));
+        if (!string.IsNullOrEmpty(issue.ParentIssueKey))
+            items.Add(new(issue.ParentIssueKey, $"{issue.Jira.Url}browse/{issue.ParentIssueKey}"));
         items.Add(new(issue.Key.Value, $"{issue.Jira.Url}browse/{issue.Key}"));
 
         return items;
     }
+
+    public static async Task<IEnumerable<IssueChangeLogItem>> GetChangeLogsItems(this Issue issue) =>
+        (await issue.GetChangeLogsAsync())
+        .SelectMany(item => item.Items, (t, item) => new IssueChangeLogItem(t.CreatedDate, item));
 }
