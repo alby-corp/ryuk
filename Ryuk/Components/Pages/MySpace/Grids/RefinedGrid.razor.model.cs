@@ -1,5 +1,6 @@
 ﻿namespace Ryuk.Components.Pages.MySpace.Grids;
 
+using System.ComponentModel.DataAnnotations;
 using Atlassian.Jira;
 using Extensions;
 using MudBlazor;
@@ -9,6 +10,9 @@ using Severity = Model.Severity;
 
 public class RefinedModel(Issue issue, IEnumerable<IssueChangeLogItem> issueChangeLogItems)
 {
+    public RefinedModel() : this(issue: default, issueChangeLogItems : default)
+    {
+    }
 
     public string Key { get; } = issue?.Key.Value ?? string.Empty;
     public List<BreadcrumbItem> Breadcrumbs { get; } = issue?.ToBreadcrumbs() ?? [];
@@ -24,6 +28,7 @@ public class RefinedModel(Issue issue, IEnumerable<IssueChangeLogItem> issueChan
     public DateTime? StartDate { get; set; } = issue?.StartDate();
     public DateTime? DueDate { get; set; } = issue?.DueDate;
 
+    [RegularExpression(@"^ *([0-9]+[WwDdHhMm])( +[0-9]+[WwDdHhMm])* *$")]
     public string OriginalEstimate { get; set; } = issue?.TimeTrackingData.OriginalEstimate ?? string.Empty;
     public long OriginalEstimateInSeconds { get; set; } = issue?.TimeTrackingData.OriginalEstimateInSeconds ?? 0;
     public IEnumerable<Error> Errors { get; } = Validate(issue, issueChangeLogItems);
@@ -46,9 +51,9 @@ public class RefinedModel(Issue issue, IEnumerable<IssueChangeLogItem> issueChan
             issue.TimeTrackingData.OriginalEstimateInSeconds < 1)
             yield return new(Severity.Error, Color.Error, "Missing Original Estimate");
 
-        if (!string.IsNullOrEmpty(issue?.TimeTrackingData.OriginalEstimate) && issue.StartDate() is not null &&
+        if (lastStatusChange < DateTime.Now && !string.IsNullOrEmpty(issue?.TimeTrackingData.OriginalEstimate) && issue.StartDate() is not null &&
             issue.DueDate is not null)
-            yield return new(Severity.Success, Color.Success, "Issue is in the wrong state! Move it to ToDo");
+            yield return new(Severity.Success, Color.Success, "Issue is ready, move it to ToDo");
 
         if (lastStatusChange < DateTime.Now)
             yield return new(Severity.Warning, Color.Warning, "Issue in the refined state for more than 1 day");

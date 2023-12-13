@@ -64,7 +64,11 @@
         <PropertyColumn Title="Original Estimate" Property="model => model.OriginalEstimate" SortBy="model => model.OriginalEstimateInSeconds" Required>
             <EditTemplate>
                 <MudTextField Label="Original Estimate"
+                              AutoGrow="false"
+                              For="@(() => context.Item.OriginalEstimate)"
                               @bind-Value="@context.Item.OriginalEstimate" Variant="Variant.Text"
+                              Adornment="Adornment.End" AdornmentText="00m 00h 00d"
+                              ErrorText="Incorrect value (00m 00h 00d)"
                               Required RequiredError="Provide a Original Estimate"/>
             </EditTemplate>
         </PropertyColumn>
