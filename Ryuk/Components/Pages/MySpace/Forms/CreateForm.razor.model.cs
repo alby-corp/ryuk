@@ -26,5 +26,6 @@ public class CreateModel
     
     public string Labels { get; set; } = string.Empty;
     
+    [RegularExpression(@"^ *([0-9]+[WwDdHhMm])( +[0-9]+[WwDdHhMm])* *$", ErrorMessage = "Incorrect OriginalEstimate format")]
     public string OriginalEstimate { get; set; } = string.Empty;
 }
