@@ -1,16 +1,18 @@
 ﻿@using Ryuk.Extensions
 @using Ryuk.Components.Pages.MySpace.Actions
 @using System.Globalization
-
 @if (Issues is null || _items is null)
 {
     <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
     </MudStack>
     return;
 }
 
-<MudDataGrid @ref="grid" T="ToDoModel" Items="@_items" Dense="true">
+<MudDataGrid @ref="grid" T="ToDoModel" Items="@_items" Dense="true"
+             EditMode="DataGridEditMode.Form"
+             EditTrigger="DataGridEditTrigger.Manual"
+             ReadOnly="@false" CommittedItemChanges="CommittedItemChanges">
     <ToolBarContent>
         <MudText Typo="Typo.h6">ToDo Issues</MudText>
     </ToolBarContent>
@@ -38,15 +40,41 @@
             </CellTemplate>
         </TemplateColumn>
 
-        <PropertyColumn Title="Summary" Property="model => model.Summary" IsEditable="false"/>
+        <TemplateColumn Title="Summary" SortBy="model => model.Summary">
+            <CellTemplate>
+                @context.Item.Summary
+            </CellTemplate>
+        </TemplateColumn>
 
-        <PropertyColumn Title="Start Date" Property="model => model.StartDate" Format="d" Culture="CultureInfo.CurrentCulture" SortBy="model => model.StartDate ?? DateTime.MinValue"/>
+        <PropertyColumn Title="Start Date" Property="model => model.StartDate" Format="d" Culture="CultureInfo.CurrentCulture" SortBy="model => model.StartDate ?? DateTime.MinValue">
+            <EditTemplate>
+                <MudDatePicker Label="Start Date"
+                               @bind-Date="@context.Item.StartDate" DateFormat="d" Culture="CultureInfo.CurrentUICulture"
+                               Required RequiredError="You must select a Start Date"/>
+            </EditTemplate>
+        </PropertyColumn>
 
-        <PropertyColumn Title="Due Date" Property="model => model.DueDate" Format="d" Culture="CultureInfo.CurrentCulture" SortBy="model => model.DueDate ?? DateTime.MinValue"/>
+        <PropertyColumn Title="Due Date" Property="model => model.DueDate" Format="d" Culture="CultureInfo.CurrentCulture" SortBy="model => model.DueDate ?? DateTime.MinValue">
+            <EditTemplate>
+                <MudDatePicker Label="Due Date"
+                               @bind-Date="@context.Item.DueDate" DateFormat="d" Culture="CultureInfo.CurrentUICulture"
+                               Required RequiredError="You must select a Due Date"/>
+            </EditTemplate>
+        </PropertyColumn>
 
-        <PropertyColumn Title="Original Estimate" Property="model => model.OriginalEstimate" Sortable="false" Required RequiredError="You must provide a Original estimate"/>
+        <PropertyColumn Title="Original Estimate" Property="model => model.OriginalEstimate" SortBy="model => model.OriginalEstimateInSeconds" Required>
+            <EditTemplate>
+                <MudTextField Label="Original Estimate"
+                              AutoGrow="false"
+                              For="@(() => context.Item.OriginalEstimate)"
+                              @bind-Value="@context.Item.OriginalEstimate" Variant="Variant.Text"
+                              Adornment="Adornment.End" AdornmentText="00m 00h 00d"
+                              ErrorText="Incorrect value (00m 00h 00d)"
+                              Required RequiredError="Provide a Original Estimate"/>
+            </EditTemplate>
+        </PropertyColumn>
 
-        <TemplateColumn Title="Errors" Sortable="false">
+        <TemplateColumn Title="Errors" Sortable="false" IsEditable="false">
             <CellTemplate>
                 <MudList Clickable="@false" Dense="@true" DisableGutters="@true">
                     @foreach (var error in context.Item.Errors)
@@ -57,13 +85,16 @@
             </CellTemplate>
         </TemplateColumn>
 
-        <TemplateColumn Title="Actions" Sortable="false">
+        <TemplateColumn Title="Actions" Sortable="false" IsEditable="false">
             <CellTemplate>
-                <CascadingValue Value="@Issues.GetByKey(context.Item.Key)">
-                    <CascadingValue Value="@context.Item.HasErrors">
-                        <ActionButtons/>
+                <MudStack Row Justify="Justify.FlexEnd" AlignItems="AlignItems.End">
+                    <CascadingValue Value="@Issues.GetByKey(context.Item.Key)">
+                        <CascadingValue Value="@context.Item.HasErrors">
+                            <ActionButtons/>
+                        </CascadingValue>
                     </CascadingValue>
-                </CascadingValue>
+                    <MudButton Variant="Variant.Outlined" OnClick="@context.Actions.StartEditingItemAsync">Edit</MudButton>
+                </MudStack>
             </CellTemplate>
         </TemplateColumn>
 

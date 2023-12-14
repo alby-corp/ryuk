@@ -36,10 +36,13 @@ public partial class RefinedGrid
 
         try
         {
-            issue.DueDate = item.DueDate;
-            issue.UpdateStartDate(item.StartDate);
+            if (issue != null)
+            {
+                issue.DueDate = item.DueDate;
+                issue.UpdateStartDate(item.StartDate);
 
-            await issue.SaveChangesAsync();
+                await issue.SaveChangesAsync();
+            }
         }
         catch (Exception e)
         {

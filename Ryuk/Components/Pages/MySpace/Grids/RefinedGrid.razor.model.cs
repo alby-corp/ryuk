@@ -8,9 +8,9 @@ using Error = Model.Error;
 using IssueChangeLogItem = Model.IssueChangeLogItem;
 using Severity = Model.Severity;
 
-public class RefinedModel(Issue issue, IEnumerable<IssueChangeLogItem> issueChangeLogItems)
+public class RefinedModel(Issue? issue, IEnumerable<IssueChangeLogItem>? issueChangeLogItems)
 {
-    public RefinedModel() : this(issue: default, issueChangeLogItems : default)
+    public RefinedModel() : this(default, default)
     {
     }
 
@@ -30,6 +30,7 @@ public class RefinedModel(Issue issue, IEnumerable<IssueChangeLogItem> issueChan
 
     [RegularExpression(@"^ *([0-9]+[WwDdHhMm])( +[0-9]+[WwDdHhMm])* *$")]
     public string OriginalEstimate { get; set; } = issue?.TimeTrackingData.OriginalEstimate ?? string.Empty;
+
     public long OriginalEstimateInSeconds { get; set; } = issue?.TimeTrackingData.OriginalEstimateInSeconds ?? 0;
     public IEnumerable<Error> Errors { get; } = Validate(issue, issueChangeLogItems);
     public bool HasErrors => Errors.Any(error => error.Severity == Severity.Error);
@@ -51,7 +52,8 @@ public class RefinedModel(Issue issue, IEnumerable<IssueChangeLogItem> issueChan
             issue.TimeTrackingData.OriginalEstimateInSeconds < 1)
             yield return new(Severity.Error, Color.Error, "Missing Original Estimate");
 
-        if (lastStatusChange < DateTime.Now && !string.IsNullOrEmpty(issue?.TimeTrackingData.OriginalEstimate) && issue.StartDate() is not null &&
+        if (lastStatusChange < DateTime.Now && !string.IsNullOrEmpty(issue?.TimeTrackingData.OriginalEstimate) &&
+            issue.StartDate() is not null &&
             issue.DueDate is not null)
             yield return new(Severity.Success, Color.Success, "Issue is ready, move it to ToDo");
 

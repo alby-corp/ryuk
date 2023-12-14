@@ -11,8 +11,8 @@ public static class IssueExtension
     public static Issue GetByKey(this IEnumerable<Issue> issues, string key) => issues.Single(issue =>
         string.Equals(issue.Key.Value, key, StringComparison.InvariantCultureIgnoreCase));
 
-    public static bool InStatus(this Issue issue, params string[] statuses) =>
-        statuses.Contains(issue.Status.Name, StringComparer.InvariantCultureIgnoreCase);
+    public static bool InStatus(this Issue? issue, params string[] statuses) =>
+        statuses.Contains(issue?.Status.Name, StringComparer.InvariantCultureIgnoreCase);
 
     public static bool NotInStatus(this Issue issue, params string[] statuses) =>
         !statuses.Contains(issue.Status.Name, StringComparer.InvariantCultureIgnoreCase);
@@ -79,7 +79,7 @@ public static class IssueExtension
         return items;
     }
 
-    public static async Task<IEnumerable<IssueChangeLogItem>> GetChangeLogsItems(this Issue issue) =>
+    public static async Task<IEnumerable<IssueChangeLogItem>?> GetChangeLogsItems(this Issue issue) =>
         (await issue.GetChangeLogsAsync())
         .SelectMany(item => item.Items, (t, item) => new IssueChangeLogItem(t.CreatedDate, item));
 }
