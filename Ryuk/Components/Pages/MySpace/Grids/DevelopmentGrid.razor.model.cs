@@ -1,9 +1,10 @@
-﻿using Atlassian.Jira;
+﻿namespace Ryuk.Components.Pages.MySpace.Grids;
+
+using System.ComponentModel.DataAnnotations;
+using Atlassian.Jira;
+using Extensions;
+using Model;
 using MudBlazor;
-using Ryuk.Extensions;
-
-namespace Ryuk.Components.Pages.MySpace.Grids;
-
 using Severity = Model.Severity;
 
 public class DevelopmentModel(Issue? issue)
@@ -23,41 +24,41 @@ public class DevelopmentModel(Issue? issue)
 
     public string Summary { get; } = issue?.Summary ?? string.Empty;
 
-    public DateTime? StartDate { get; set; } = issue?.StartDate();
-    public DateTime? DueDate { get; set; } = issue?.DueDate;
+    public DateTime? StartDate { get; } = issue?.StartDate();
+    public DateTime? DueDate { get; } = issue?.DueDate;
 
-    public string OriginalEstimate { get; set; } = issue?.TimeTrackingData.OriginalEstimate ?? string.Empty;
-    public long OriginalEstimateInSeconds { get; set; } = issue?.TimeTrackingData.OriginalEstimateInSeconds ?? 0;
+    public string OriginalEstimate { get; } = issue?.TimeTrackingData.OriginalEstimate ?? string.Empty;
+    public long OriginalEstimateInSeconds { get; } = issue?.TimeTrackingData.OriginalEstimateInSeconds ?? 0;
 
-    public string TimeSpent { get; set; } = issue?.TimeTrackingData.TimeSpent ?? string.Empty;
-    public long TimeSpentInSeconds { get; set; } = issue?.TimeTrackingData.TimeSpentInSeconds ?? 0;
+    public string TimeSpent { get; } = issue?.TimeTrackingData.TimeSpent ?? string.Empty;
+    public long TimeSpentInSeconds { get; } = issue?.TimeTrackingData.TimeSpentInSeconds ?? 0;
 
+    [RegularExpression(@"^ *([0-9]+[WwDdHhMm])( +[0-9]+[WwDdHhMm])* *$")]
     public string RemainingEstimate { get; set; } = issue?.TimeTrackingData.RemainingEstimate ?? string.Empty;
-    public long RemainingEstimateInSeconds { get; set; } = issue?.TimeTrackingData.RemainingEstimateInSeconds ?? 0;
 
-    public IEnumerable<Model.Error> Errors { get; } = Validate(issue);
+    public long RemainingEstimateInSeconds { get; } = issue?.TimeTrackingData.RemainingEstimateInSeconds ?? 0;
+
+    public IEnumerable<Error> Errors { get; } = Validate(issue);
     public bool HasErrors => Errors.Any(error => error.Severity == Severity.Error);
 
-    static IEnumerable<Model.Error> Validate(Issue? issue)
+    static IEnumerable<Error> Validate(Issue? issue)
     {
         if (issue is null) yield break;
 
         if (issue.DueDate is null)
             yield return new(Severity.Error, Color.Error, "Missing Due Date");
 
-        if (string.IsNullOrEmpty(issue.TimeTrackingData.OriginalEstimate) || issue.TimeTrackingData.OriginalEstimateInSeconds < 1)
+        if (string.IsNullOrEmpty(issue.TimeTrackingData.OriginalEstimate) ||
+            issue.TimeTrackingData.OriginalEstimateInSeconds < 1)
             yield return new(Severity.Error, Color.Error, "Missing Original Estimate");
-
-        if (!string.IsNullOrEmpty(issue.TimeTrackingData.OriginalEstimate) && issue.StartDate() is not null && issue.DueDate is not null)
-            yield return new(Severity.Success, Color.Success, "Issue is in the wrong state! Move it to ToDo");
 
         if (issue.StartDate() is null)
             yield return new(Severity.Error, Color.Error, "Missing Start Date");
 
-        if (issue.Created < DateTime.Now.AddDays(-1) && issue.Created > DateTime.Now.AddDays(-2))
-            yield return new(Severity.Warning, Color.Warning, "Issue in the refined state for more than 1 day");
+        if (issue.TimeTrackingData.TimeSpentInSeconds > issue.TimeTrackingData.OriginalEstimateInSeconds)
+            yield return new(Severity.Warning, Color.Warning, "Time Spent on this issue exceed Original Estimate");
 
-        if (issue.Created < DateTime.Now.AddDays(-2))
-            yield return new(Severity.Warning, Color.Warning, "Issue in the refined state for more than 2 days");
+        if (issue.TimeTrackingData.TimeSpentInSeconds == issue.TimeTrackingData.OriginalEstimateInSeconds)
+            yield return new(Severity.Warning, Color.Warning, "There is no more time to spend on this issue");
     }
 }

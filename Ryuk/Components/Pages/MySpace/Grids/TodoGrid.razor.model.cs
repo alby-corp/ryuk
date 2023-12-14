@@ -5,12 +5,11 @@ using Atlassian.Jira;
 using Extensions;
 using MudBlazor;
 using Error = Model.Error;
-using IssueChangeLogItem = Model.IssueChangeLogItem;
 using Severity = Model.Severity;
 
-public class ToDoModel(Issue? issue, IEnumerable<IssueChangeLogItem>? issueChangeLogItems)
+public class ToDoModel(Issue? issue)
 {
-    public ToDoModel() : this(default, default)
+    public ToDoModel() : this(default)
     {
     }
 
@@ -32,10 +31,10 @@ public class ToDoModel(Issue? issue, IEnumerable<IssueChangeLogItem>? issueChang
     public string OriginalEstimate { get; set; } = issue?.TimeTrackingData.OriginalEstimate ?? string.Empty;
 
     public long OriginalEstimateInSeconds { get; set; } = issue?.TimeTrackingData.OriginalEstimateInSeconds ?? 0;
-    public IEnumerable<Error> Errors { get; } = Validate(issue, issueChangeLogItems);
+    public IEnumerable<Error> Errors { get; } = Validate(issue);
     public bool HasErrors => Errors.Any(error => error.Severity == Severity.Error);
 
-    static IEnumerable<Error> Validate(Issue? issue, IEnumerable<IssueChangeLogItem>? issueChangeLogs)
+    static IEnumerable<Error> Validate(Issue? issue)
     {
         if (issue is null) yield break;
 
@@ -62,6 +61,7 @@ public class ToDoModel(Issue? issue, IEnumerable<IssueChangeLogItem>? issueChang
                 "Oh no! The start of work is delayed. Urgent intervention required!");
 
         if (issue.TimeTrackingData.TimeSpent != null)
-            yield return new(Severity.Error, Color.Error, "This issue has logged time. Move it in a different state");
+            yield return new(Severity.Warning, Color.Warning,
+                "This issue has logged time. Move it in a different state");
     }
 }

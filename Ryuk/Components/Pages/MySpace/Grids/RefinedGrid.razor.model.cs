@@ -57,7 +57,7 @@ public class RefinedModel(Issue? issue, IEnumerable<IssueChangeLogItem>? issueCh
             issue.DueDate is not null)
             yield return new(Severity.Success, Color.Success, "Issue is ready, move it to ToDo");
 
-        if (lastStatusChange < DateTime.Now)
+        if (lastStatusChange < DateTime.Now.AddDays(-1))
             yield return new(Severity.Warning, Color.Warning, "Issue in the refined state for more than 1 day");
     }
 }

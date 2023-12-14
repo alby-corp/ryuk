@@ -1,11 +1,10 @@
-﻿using System.Collections.Frozen;
-using Atlassian.Jira;
-using Microsoft.AspNetCore.Components;
-using MudBlazor;
-using Ryuk.Extensions;
-using Ryuk.Model;
+﻿namespace Ryuk.Components.Pages.MySpace.Grids;
 
-namespace Ryuk.Components.Pages.MySpace.Grids;
+using System.Collections.Frozen;
+using Atlassian.Jira;
+using Extensions;
+using Microsoft.AspNetCore.Components;
+using Model;
 
 public partial class DevelopmentGrid
 {
@@ -14,7 +13,6 @@ public partial class DevelopmentGrid
 
     [Parameter] public required FrozenSet<Issue>? Issues { get; set; }
 
-    [Inject] IDialogService DialogService { get; set; } = null!;
     [Inject] IServiceProvider Provider { get; init; } = null!;
 
     protected override void OnInitialized() => _jira = Provider.GetRequiredKeyedService<Jira>("Company1");
@@ -22,7 +20,8 @@ public partial class DevelopmentGrid
     protected override void OnParametersSet()
     {
         _items = Issues?
-            .Where(issue => issue.NotInStatus(Status.Backlog, Status.Refinement, Status.Refined, Status.Todo, Status.Canceled, Status.Cancelled, Status.Done))
+            .Where(issue => issue.NotInStatus(Status.Backlog, Status.Refinement, Status.Refined, Status.Todo,
+                Status.Canceled, Status.Cancelled, Status.Done))
             .Select(issue => new DevelopmentModel(issue))
             .ToFrozenSet() ?? FrozenSet<DevelopmentModel>.Empty;
     }
@@ -30,6 +29,6 @@ public partial class DevelopmentGrid
     async Task CommittedItemChanges(DevelopmentModel item)
     {
         var errors = await _jira.UpdateRemainingEstimateAsync(item.Key, item.RemainingEstimate).ToListAsync();
-        if (errors.Any()) await DialogService.ShowMessageBox("Error", string.Join("; ", errors));
+        if (errors.Count != 0) await DialogService.ShowMessageBox("Error", string.Join("; ", errors));
     }
 }

@@ -1,11 +1,10 @@
 ﻿@using Ryuk.Extensions
 @using Ryuk.Components.Pages.MySpace.Actions
 @using System.Globalization
-
 @if (Issues is null || _items is null)
 {
-        <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
-        <MudProgressCircular Color="Color.Secondary" Indeterminate="true" />
+    <MudStack Justify="Justify.Center" AlignItems="AlignItems.Center">
+        <MudProgressCircular Color="Color.Secondary" Indeterminate="true"/>
     </MudStack>
     return;
 }
@@ -72,7 +71,11 @@
         <PropertyColumn Title="Remaining Estimate" Property="model => model.RemainingEstimate" SortBy="model => model.RemainingEstimateInSeconds" Required>
             <EditTemplate>
                 <MudTextField Label="Remaining Estimate"
+                              AutoGrow="false"
+                              For="@(() => context.Item.RemainingEstimate)"
                               @bind-Value="@context.Item.RemainingEstimate" Variant="Variant.Text"
+                              Adornment="Adornment.End" AdornmentText="00m 00h 00d"
+                              ErrorText="Incorrect value (00m 00h 00d)"
                               Required RequiredError="Provide a Remaining Estimate"/>
             </EditTemplate>
         </PropertyColumn>

@@ -8,7 +8,7 @@ using Model;
 
 public partial class TodoGrid
 {
-    HashSet<ToDoModel> _items = [];
+    FrozenSet<ToDoModel>? _items;
 
     Jira jira = null!;
     [Inject] IServiceProvider Provider { get; init; } = null!;
@@ -17,14 +17,14 @@ public partial class TodoGrid
 
     protected override void OnInitialized() => jira = Provider.GetRequiredKeyedService<Jira>("Company1");
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnParametersSet()
     {
-        foreach (var issue in (Issues ?? FrozenSet<Issue>.Empty).Where(issue => issue.InStatus(Status.Todo))
-                 .OrderBy(issue => issue.Status.Name))
-        {
-            var issueChangeLogItems = await issue.GetChangeLogsItems();
-            _items.Add(new(issue, issueChangeLogItems));
-        }
+        _items = Issues?
+            .Where(issue => issue.InStatus(Status.Todo))
+            .Select(issue => new ToDoModel(issue))
+            .OrderByDescending(model => model.Status)
+            .ThenBy(model => model.Key)
+            .ToFrozenSet() ?? FrozenSet<ToDoModel>.Empty;
     }
 
     async Task CommittedItemChanges(ToDoModel item)
