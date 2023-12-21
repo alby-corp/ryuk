@@ -1,19 +1,75 @@
-﻿<MudPaper Class="pa-4">
-    <MudForm Model="@_model">
+﻿@using Atlassian.Jira
+<MudPaper Class="pa-4">
+    <EditForm Model="@_model" @bind-IsValid="@success" @bind-Errors="@errors" OnValidSubmit="CreateAsync">
+        <DataAnnotationsValidator/>
+        <MudSelect Label="Type" For="@(() => _model.Type)" @bind-Value="_model.Type">
+            @foreach (var type in _types)
+            {
+                <MudSelectItem Value="@type">@type.Name</MudSelectItem>
+            }
+        </MudSelect>
 
-        <MudTextField Label="Summary" @bind-Value="_model.Summary" For="@(() => _model.Summary)"/>
-        <MudTextField Label="Description" @bind-Value="_model.Description" For="@(() => _model.Description)"/>
-        <MudTextField Label="Ticket Id" @bind-Value="_model.Ticket" For="@(() => _model.Ticket)"/>
-        <MudTextField Label="Reporter" @bind-Value="_model.Reporter" For="@(() => _model.Reporter)"/>
-        <MudTextField Label="Assignee" @bind-Value="_model.Assignee" For="@(() => _model.Assignee)"/>
-        <MudTextField Label="Priority" @bind-Value="_model.Priority" For="@(() => _model.Priority)"/>
-        <MudTextField Label="Components" @bind-Value="_model.Components" For="@(() => _model.Components)"/>
-        <MudTextField Label="Labels" @bind-Value="_model.Labels" For="@(() => _model.Labels)"/>
-        <MudTextField Label="OriginalEstimate" @bind-Value="_model.OriginalEstimate" For="@(() => _model.OriginalEstimate)"/>
+        <MudTextField
+            Label="Summary" For="@(() => _model.Summary)"
+            @bind-Value="_model.Summary"
+            Clearable="true" />
 
-        <div class="d-flex justify-end mt-4">
-            <MudButton OnClick="Close" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto">Close</MudButton>
-            <MudButton OnClick="CreateAsync" Variant="Variant.Filled" Color="Color.Primary" Class="ml-auto">Create</MudButton>
-        </div>
-    </MudForm>
+        <MudTextField
+            Label="Description" For="@(() => _model.Description)"
+            @bind-Value="_model.Description"
+            Lines="8"
+            Clearable="true" />
+
+        <MudTextField
+            Label="Ticket Id" For="@(() => _model.Ticket)"
+            @bind-Value="_model.Ticket"
+            Clearable="true" />
+
+        <MudAutocomplete
+            Label="Assignee"
+            @bind-Value="_model.Assignee"
+            T="JiraUser"
+            ResetValueOnEmptyText="true"
+            SearchFunc="GetAssignee"
+            ShowProgressIndicator="true"
+            AdornmentIcon="@Icons.Material.Filled.Search"
+            AdornmentColor="Color.Dark" />
+
+        <MudSelect Label="Priority" For="@(() => _model.Priority)" @bind-Value="_model.Priority">
+            @foreach (var priority in _priorities)
+            {
+                <MudSelectItem Value="@priority">
+                    <MudImage src="@priority.IconUrl" Height="12" Class="mr-1"/>@priority.Name
+                </MudSelectItem>
+            }
+        </MudSelect>
+
+        <MudSelect Label="Components" @bind-SelectedValues="_model.Components" MultiSelection="true">
+            @foreach (var component in _components)
+            {
+                <MudSelectItem Value="@component">@component.Name</MudSelectItem>
+            }
+        </MudSelect>
+
+        <MudTextField Label="Labels" For="@(() => _model.Labels)"
+                      @bind-Value="_model.Labels"
+                      TextChanged="@SetValue"
+                      Clearable="true" />
+
+        <MudChipSet AllClosable="true" OnClose="@Closed" Class="mt-2">
+            @foreach (var label in _labels)
+            {
+                <MudChip Text="@label"></MudChip>
+            }
+        </MudChipSet>
+
+        <MudTextField
+            Label="OriginalEstimate" For="@(() => _model.OriginalEstimate)"
+            @bind-Value="_model.OriginalEstimate"/>
+
+        <MudStack Row Justify="Justify.FlexEnd" AlignItems="AlignItems.End" Class="mt-2">
+            <MudButton OnClick="@Close" Variant="Variant.Filled" Color="Color.Secondary" Class="ml-auto">Close</MudButton>
+            <MudButton ButtonType="ButtonType.Submit" Variant="Variant.Filled" Color="Color.Primary">Create</MudButton>
+        </MudStack>
+    </EditForm>
 </MudPaper>
