@@ -1,29 +1,26 @@
-﻿using Atlassian.Jira;
+﻿namespace Ryuk.Components.Pages.MySpace.Forms;
+
+using Atlassian.Jira;
 using Microsoft.AspNetCore.Components;
 using MudBlazor;
-using Ryuk.Extensions;
-
-namespace Ryuk.Components.Pages.MySpace.Forms;
+using Extensions;
 
 public partial class CreateForm
 {
     const string ProjectKey = "EIMMS";
     readonly CreateModel _model = new();
-    IEnumerable<ProjectComponent> _components = [];
 
     Jira _jira = null!;
+    List<string> _labels = [];
 
     IEnumerable<IssuePriority> _priorities = [];
     IEnumerable<IssueType> _types = [];
-    List<string> _labels = new();
-
+    IEnumerable<ProjectComponent> _components = [];
+    
     [CascadingParameter] public required MudDialogInstance MudDialog { get; set; }
     [Inject] IServiceProvider Provider { get; init; } = null!;
-
-    void Close()
-    {
-        MudDialog.Close(DialogResult.Ok(true));
-    }
+    
+    void Close() => MudDialog.Close(DialogResult.Ok(true));
 
     protected override async Task OnInitializedAsync()
     {
@@ -31,9 +28,9 @@ public partial class CreateForm
 
         var project = await _jira.Projects.GetProjectAsync(ProjectKey);
 
-        _components = (await project.GetComponentsAsync()).OrderBy(component => component.Name).ToList();
-        _types = (await project.GetIssueTypesAsync()).OrderBy(type => type.Name).ToList();
-        _priorities = (await _jira.Priorities.GetPrioritiesAsync()).OrderBy(priority => priority.Name).ToList();
+        _components = (await project.GetComponentsAsync()).OrderBy(component => component.Name).ToHashSet();
+        _types = (await project.GetIssueTypesAsync()).OrderBy(type => type.Name).ToHashSet();
+        _priorities = (await _jira.Priorities.GetPrioritiesAsync()).OrderBy(priority => priority.Name).ToHashSet();
     }
 
     async Task CreateAsync()
@@ -54,7 +51,7 @@ public partial class CreateForm
 
             var resultIssue = await issue.SaveChangesAsync();
 
-            if (!string.IsNullOrEmpty(_model.OriginalEstimate) && resultIssue != null)
+            if (!string.IsNullOrEmpty(_model.OriginalEstimate) && resultIssue is not null)
             {
                 var list = await _jira.UpdateOriginalEstimateAsync($"{resultIssue.Key}", _model.OriginalEstimate)
                     .ToListAsync();
@@ -67,10 +64,7 @@ public partial class CreateForm
         }
     }
 
-    Task<IEnumerable<JiraUser>> GetAssignee(string value)
-    {
-        return _jira.Users.SearchAssignableUsersForProjectAsync(value, ProjectKey);
-    }
+    Task<IEnumerable<JiraUser>> GetAssignee(string value) => _jira.Users.SearchAssignableUsersForProjectAsync(value, ProjectKey);
     
     void SetValue()
     {

@@ -1,7 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Atlassian.Jira;
+﻿namespace Ryuk.Components.Pages.MySpace.Forms;
 
-namespace Ryuk.Components.Pages.MySpace.Forms;
+using System.ComponentModel.DataAnnotations;
+using Atlassian.Jira;
 
 public class CreateModel
 {

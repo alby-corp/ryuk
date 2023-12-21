@@ -1,6 +1,6 @@
-﻿using System.Text.RegularExpressions;
+﻿namespace Ryuk.Extensions;
 
-namespace Ryuk.Extensions;
+using System.Text.RegularExpressions;
 
 public partial class Regex
 {

@@ -1,9 +1,9 @@
-﻿using Atlassian.Jira;
+﻿namespace Ryuk.Extensions;
+
+using Atlassian.Jira;
 using MudBlazor;
 using MudBlazor.Extensions;
-using Ryuk.Model;
-
-namespace Ryuk.Extensions;
+using Model;
 
 public static class IssueExtension
 {
